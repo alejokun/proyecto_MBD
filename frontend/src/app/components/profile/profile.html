@@ -1,0 +1,42 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card shadow border-0 overflow-hidden rounded-4">
+        <div class="py-4 text-center" [ngClass]="is_staff ? 'bg-warning' : 'bg-primary'">
+          <div class="bg-white rounded-circle d-inline-block p-3 shadow-sm mb-2">
+            <span class="display-4">{{ is_staff ? '👑' : '👤' }}</span>
+          </div>
+          <h3 class="text-white mb-0">{{ username }}</h3>
+          <p class="text-white opacity-75 mb-0 small text-uppercase fw-bold">{{ role }}</p>
+        </div>
+
+        <div class="card-body p-4">
+          <ul class="list-group list-group-flush mb-4">
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-0 px-0">
+              <span class="text-muted">Estado de Cuenta:</span>
+              <span class="badge bg-success rounded-pill">Activo</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-0 px-0">
+              <span class="text-muted">Permisos de Escritura:</span>
+              <span class="fw-bold">{{ is_staff ? 'Habilitados' : 'Solo Movimientos' }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-0 px-0">
+              <span class="text-muted">Último Acceso:</span>
+              <span class="text-dark fw-medium">{{ fechaIngreso }}</span>
+            </li>
+          </ul>
+
+          <div class="d-grid gap-2">
+            <button (click)="cerrarSesion()" class="btn btn-outline-danger border-2 fw-bold py-2 rounded-3">
+              Cerrar Sesión Segura
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <p class="text-center text-muted mt-4 small">
+        Si crees que tu rango es incorrecto, contacta al administrador del sistema.
+      </p>
+    </div>
+  </div>
+</div>

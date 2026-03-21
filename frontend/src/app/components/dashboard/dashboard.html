@@ -1,0 +1,53 @@
+<div class="container mt-4">
+  <h2 class="mb-4">Panel de Control</h2>
+
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card bg-primary text-white h-100 shadow-sm border-0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+          <h5 class="card-title opacity-75">Total Productos</h5>
+          <p class="display-4 fw-bold mb-0">{{ totalProductos }}</p>
+          <a routerLink="/productos" class="btn btn-light btn-sm mt-3 fw-bold text-primary">Gestionar</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card bg-danger text-white h-100 shadow-sm border-0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+          <h5 class="card-title opacity-75">Bajo Stock (< 5)</h5>
+          <p class="display-4 fw-bold mb-0">{{ bajoStock }}</p>
+          <button class="btn btn-light btn-sm mt-3 fw-bold text-danger">Ver Alertas</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card bg-success text-white h-100 shadow-sm border-0">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+          <h5 class="card-title opacity-75">Movimientos Hoy</h5>
+          <p class="display-4 fw-bold mb-0">0</p>
+          <a routerLink="/movimientos" class="btn btn-light btn-sm mt-3 fw-bold text-success">Ver Historial</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-5">
+    <h4 class="mb-3">Últimos Productos Agregados</h4>
+    <div class="card shadow-sm border-0">
+      <ul class="list-group list-group-flush">
+        <li *ngIf="loading" class="list-group-item text-center py-3">Cargando datos...</li>
+        <li *ngIf="!loading && productosRecientes.length === 0" class="list-group-item text-muted">No hay productos registrados.</li>
+        
+        <li *ngFor="let p of productosRecientes" class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <span class="fw-bold">{{ p.nombre }}</span>
+            <small class="text-muted ms-2">{{ p.categoria_nombre }}</small>
+          </div>
+          <span class="badge bg-secondary rounded-pill">$ {{ p.precio }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
