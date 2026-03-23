@@ -1,7 +1,9 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm py-3 mb-4">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm py-3">
   <div class="container">
-    <a class="navbar-brand d-flex align-items-center fw-bold text-uppercase tracking-wider" routerLink="/dashboard">
-      <span class="text-primary me-2">📦</span> MBD Inventario
+    
+    <a class="navbar-brand fw-bold d-flex align-items-center" routerLink="/">
+      <i class="bi bi-box-seam-fill me-2 text-primary"></i>
+      <span>INVENTARIO <span class="text-primary">MBD</span></span>
     </a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -9,29 +11,50 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
+      
       <ul class="navbar-nav me-auto mb-2 mb-lg-0" *ngIf="isLoggedIn">
-        <li class="nav-item"><a class="nav-link px-3" routerLink="/dashboard" routerLinkActive="active text-primary">Panel</a></li>
-        <li class="nav-item"><a class="nav-link px-3" routerLink="/productos" routerLinkActive="active text-primary">Productos</a></li>
-        <li class="nav-item"><a class="nav-link px-3" routerLink="/movimientos" routerLinkActive="active text-primary">Logística</a></li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/productos" routerLinkActive="active">Inventario</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/movimientos" routerLinkActive="active">Movimientos</a>
+        </li>
         <li class="nav-item" *ngIf="isAdmin">
-          <a class="nav-link px-3 text-warning fw-bold" routerLink="/categorias" routerLinkActive="active">Configuración</a>
+          <a class="nav-link text-warning" routerLink="/categorias" routerLinkActive="active">Categorías</a>
         </li>
       </ul>
 
-      <div class="d-flex align-items-center gap-3">
-        <ng-container *ngIf="isLoggedIn; else guestButtons">
-          <div class="text-white small text-end me-2 d-none d-sm-block">
-            <div class="fw-bold">{{ username }}</div>
-            <div class="text-muted opacity-75" style="font-size: 0.7rem;">{{ isAdmin ? 'Administrador' : 'Operador' }}</div>
-          </div>
-          <button (click)="logout()" class="btn btn-outline-danger btn-sm px-3 rounded-pill">Salir</button>
+      <ul class="navbar-nav ms-auto align-items-center">
+        
+        <ng-container *ngIf="!isLoggedIn">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/login">Iniciar Sesión</a>
+          </li>
+          <li class="nav-item ms-lg-2">
+            <a class="btn btn-primary btn-sm px-3 rounded-pill" routerLink="/register">Registrarse</a>
+          </li>
         </ng-container>
 
-        <ng-template #guestButtons>
-          <a routerLink="/login" class="btn btn-primary btn-sm px-4 rounded-pill">Ingresar</a>
-          <a routerLink="/register" class="btn btn-outline-light btn-sm px-3 rounded-pill">Registro</a>
-        </ng-template>
-      </div>
+        <ng-container *ngIf="isLoggedIn">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" id="userMenu" role="button" data-bs-toggle="dropdown">
+              <i class="bi bi-person-circle fs-5 me-2"></i>
+              <span class="small">Mi Panel</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+              <li><a class="dropdown-item" routerLink="/perfil">Mi Perfil</a></li>
+              <li *ngIf="isAdmin"><a class="dropdown-item" routerLink="/dashboard">Dashboard Académico</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <button class="dropdown-item text-danger" (click)="logout()">
+                  <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                </button>
+              </li>
+            </ul>
+          </li>
+        </ng-container>
+
+      </ul>
     </div>
   </div>
 </nav>

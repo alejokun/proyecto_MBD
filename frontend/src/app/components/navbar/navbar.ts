@@ -1,6 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,28 +11,20 @@ import { Router, RouterModule } from '@angular/router';
   styleUrl: './navbar.css'
 })
 export class NavbarComponent implements OnInit {
+  private authService = inject(AuthService);
   private router = inject(Router);
 
-  // Variables de estado del usuario
-  isLoggedIn: boolean = false;
-  username: string | null = '';
-  isAdmin: boolean = false;
+  isLoggedIn = false;
+  isAdmin = false;
 
-  ngOnInit(): void {
-    this.checkUserStatus();
-  }
-
-  checkUserStatus() {
-    const token = localStorage.getItem('access');
-    this.isLoggedIn = !!token;
-    this.username = localStorage.getItem('username');
-    this.isAdmin = localStorage.getItem('is_staff') === 'true';
+  ngOnInit() {
+    // Escuchamos los cambios del servicio de autenticación
+    this.authService.isLoggedIn$.subscribe(status => this.isLoggedIn = status);
+    this.authService.isAdmin$.subscribe(status => this.isAdmin = status);
   }
 
   logout() {
-    // Limpiamos todo el rastro
-    localStorage.clear();
-    this.isLoggedIn = false;
-    this.router.navigate(['/login']);
+    this.authService.logout();
+    this.router.navigate(['/']); // Al cerrar sesión, lo mandamos al Home público
   }
 }

@@ -1,0 +1,30 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Forzamos que la tabla sea una tabla real */
+table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    display: table !important; /* Esto rompe cualquier diseño de "casillas" */
+    background-color: white;
+}
+
+th, td {
+    padding: 12px 15px !important;
+    border-bottom: 1px solid #dee2e6 !important;
+    text-align: left;
+    display: table-cell !important; /* Crucial para que no se apilen como cuadros */
+}
+
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.card {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}

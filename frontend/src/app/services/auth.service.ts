@@ -1,34 +1,36 @@
-import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { LoginResponse } from '../models/auth.model';
-import { tap } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private http = inject(HttpClient);
-  private readonly API_URL = 'http://localhost:8000/api/auth'; 
-  private readonly TOKEN_KEY = 'auth_token';
+  // El BehaviorSubject guarda el estado actual (true/false)
+  private loggedIn = new BehaviorSubject<boolean>(this.hasToken());
+  private isAdmin = new BehaviorSubject<boolean>(this.checkAdmin());
 
-  login(credentials: any) {
-    return this.http.post<LoginResponse>(`${this.API_URL}/login/`, credentials)
-      .pipe(
-        tap(res => {
-          if (res.access) localStorage.setItem(this.TOKEN_KEY, res.access);
-        })
-      );
+  // Estos son los "observables" que los componentes van a escuchar
+  isLoggedIn$ = this.loggedIn.asObservable();
+  isAdmin$ = this.isAdmin.asObservable();
+
+  constructor() {}
+
+  private hasToken(): boolean {
+    return !!localStorage.getItem('access');
+  }
+
+  private checkAdmin(): boolean {
+    return localStorage.getItem('is_staff') === 'true';
+  }
+
+  // Método mágico para avisar a todos que el estado cambió
+  updateStatus() {
+    this.loggedIn.next(this.hasToken());
+    this.isAdmin.next(this.checkAdmin());
   }
 
   logout() {
-    localStorage.removeItem(this.TOKEN_KEY);
-  }
-
-  getToken() {
-    return localStorage.getItem(this.TOKEN_KEY);
-  }
-
-  isLoggedIn(): boolean {
-    return !!this.getToken();
+    localStorage.clear();
+    this.updateStatus();
   }
 }

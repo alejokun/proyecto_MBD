@@ -3,51 +3,64 @@
     <div class="col-md-8">
       <div class="card shadow border-0">
         <div class="card-header bg-primary text-white py-3">
-          <h4 class="mb-0">📦 Registrar Nuevo Producto</h4>
+          <h4 class="mb-0">
+            {{ isEditMode ? '✏️ Editar Producto' : '📦 Registrar Nuevo Producto' }}
+          </h4>
         </div>
+
         <div class="card-body p-4">
           <form [formGroup]="productoForm" (ngSubmit)="onSubmit()">
             
             <div class="row">
               <div class="col-md-7 mb-3">
                 <label class="form-label fw-bold">Nombre del Producto</label>
-                <input type="text" formControlName="nombre" class="form-control" placeholder="Ej: Monitor Gamer 24'">
-                <div *ngIf="productoForm.get('nombre')?.invalid && productoForm.get('nombre')?.touched" class="text-danger small">
-                  El nombre es obligatorio (mínimo 3 caracteres).
-                </div>
+                <input type="text" formControlName="nombre" class="form-control" 
+                       [class.is-invalid]="productoForm.get('nombre')?.invalid && productoForm.get('nombre')?.touched"
+                       placeholder="Ej: Monitor Gamer 24'">
+                <div class="invalid-feedback">El nombre es obligatorio (mín. 3 caracteres).</div>
               </div>
+
               <div class="col-md-5 mb-3">
                 <label class="form-label fw-bold">Categoría</label>
-                <select formControlName="id_categoria" class="form-select">
+                <select formControlName="id_categoria" class="form-select"
+                        [class.is-invalid]="productoForm.get('id_categoria')?.invalid && productoForm.get('id_categoria')?.touched">
                   <option [value]="null" disabled>Seleccione...</option>
-                  <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nombre }}</option>
+                  <option *ngFor="let cat of categorias" [value]="cat.id">
+                    {{ cat.nombre }}
+                  </option>
                 </select>
+                <div class="invalid-feedback">Selecciona una categoría.</div>
               </div>
             </div>
 
             <div class="mb-3">
               <label class="form-label fw-bold">Descripción (Opcional)</label>
-              <textarea formControlName="descripcion" class="form-control" rows="2"></textarea>
+              <textarea formControlName="descripcion" class="form-control" rows="2" 
+                        placeholder="Detalles del producto..."></textarea>
             </div>
 
             <div class="row mb-4">
               <div class="col-md-6 mb-3">
                 <label class="form-label fw-bold">Precio Unitario ($)</label>
-                <input type="number" formControlName="precio" class="form-control" step="0.01">
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" formControlName="precio" class="form-control" step="0.01">
+                </div>
               </div>
               <div class="col-md-6 mb-3">
-                <label class="form-label fw-bold">Stock Inicial</label>
+                <label class="form-label fw-bold">Stock Inicial / Actual</label>
                 <input type="number" formControlName="stock" class="form-control">
               </div>
             </div>
 
             <div class="d-flex justify-content-end gap-2 border-top pt-3">
-              <button type="button" routerLink="/productos" class="btn btn-light px-4">Cancelar</button>
-              <button type="submit" [disabled]="productoForm.invalid || loading" class="btn btn-primary px-5 fw-bold">
-                {{ loading ? 'Guardando...' : 'Guardar Producto' }}
+              <a routerLink="/productos" class="btn btn-light px-4 border">Cancelar</a>
+              
+              <button type="submit" [disabled]="productoForm.invalid || loading" class="btn btn-primary px-5 fw-bold shadow-sm">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                {{ loading ? 'Guardando...' : (isEditMode ? 'Actualizar Producto' : 'Guardar Producto') }}
               </button>
             </div>
-
           </form>
         </div>
       </div>
