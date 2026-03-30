@@ -7,19 +7,23 @@
             <span class="display-4">{{ is_staff ? '👑' : '👤' }}</span>
           </div>
           <h3 class="text-white mb-0">{{ username }}</h3>
-          <p class="text-white opacity-75 mb-0 small text-uppercase fw-bold">{{ role }}</p>
+          <p class="text-white opacity-75 mb-0 small text-uppercase fw-bold">
+            {{ is_staff ? 'Administrador' : 'Usuario del Sistema' }}
+          </p>
         </div>
 
         <div class="card-body p-4">
           <ul class="list-group list-group-flush mb-4">
             <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-0 px-0">
               <span class="text-muted">Estado de Cuenta:</span>
-              <span class="badge bg-success rounded-pill">Activo</span>
+              <span class="badge bg-success rounded-pill px-3">Activo</span>
             </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-0 px-0">
+
+            <li *ngIf="is_staff" class="list-group-item d-flex justify-content-between align-items-center py-3 border-0 px-0">
               <span class="text-muted">Permisos de Escritura:</span>
-              <span class="fw-bold">{{ is_staff ? 'Habilitados' : 'Solo Movimientos' }}</span>
+              <span class="fw-bold text-warning">Habilitados</span>
             </li>
+
             <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-0 px-0">
               <span class="text-muted">Último Acceso:</span>
               <span class="text-dark fw-medium">{{ fechaIngreso }}</span>
@@ -28,7 +32,7 @@
 
           <div class="d-grid gap-2">
             <button (click)="cerrarSesion()" class="btn btn-outline-danger border-2 fw-bold py-2 rounded-3">
-              Cerrar Sesión Segura
+              <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión Segura
             </button>
           </div>
         </div>

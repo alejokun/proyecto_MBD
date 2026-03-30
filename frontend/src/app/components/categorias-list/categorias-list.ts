@@ -1,22 +1,22 @@
+// src/app/components/categorias-list/categorias-list.ts
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { Categoria } from '../../models/producto.model'; // Importamos el modelo
+import { Categoria } from '../../models/producto.model';
 
 @Component({
   selector: 'app-categorias-list',
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './categorias-list.html',
-  styleUrl: './categorias-list.css' // Asegúrate de que este archivo exista, aunque esté vacío
+  styleUrl: './categorias-list.css'
 })
 export class CategoriasListComponent implements OnInit {
-  // Inyectamos HttpClient directamente aquí para no crear un servicio extra por ahora
   private http = inject(HttpClient);
-  private apiUrl = '/api/categorias/'; // Usando el Proxy
+  // URL completa para evitar problemas de proxy
+  private apiUrl = 'http://localhost:8000/api/categorias/'; 
 
-  // Variables para la vista
   categorias: Categoria[] = [];
   loading: boolean = true;
   error: string | null = null;
@@ -27,8 +27,6 @@ export class CategoriasListComponent implements OnInit {
 
   cargarCategorias(): void {
     this.loading = true;
-    this.error = null;
-
     this.http.get<Categoria[]>(this.apiUrl).subscribe({
       next: (data) => {
         this.categorias = data;
@@ -36,7 +34,7 @@ export class CategoriasListComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al cargar categorías:', err);
-        this.error = 'No se pudieron cargar las categorías. Revisa la conexión con el Backend.';
+        this.error = 'No se pudieron cargar las categorías.';
         this.loading = false;
       }
     });

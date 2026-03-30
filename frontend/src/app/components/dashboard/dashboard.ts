@@ -2,7 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProductosService } from '../../services/productos';
-import { Producto } from '../../models/producto.model'; // Asegúrate de tener el modelo
+import { Producto } from '../../models/producto.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,42 +11,47 @@ import { Producto } from '../../models/producto.model'; // Asegúrate de tener e
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
+
 export class DashboardComponent implements OnInit {
   private prodService = inject(ProductosService);
   private cdr = inject(ChangeDetectorRef);
 
-  // Variables de las tarjetas
   totalProductos: number = 0;
   bajoStock: number = 0;
-  movimientosHoy: number = 0; 
-  
-  // VARIABLE QUE FALTABA (La que causaba el error TS2339)
   productosRecientes: Producto[] = []; 
-  
   loading: boolean = true;
 
   ngOnInit() {
     this.cargarEstadisticas();
   }
+verAlertas() {
+  const productosCriticos = this.productosRecientes
+    .filter(p => (p.stock ?? 0) <= 5)
+    .map(p => `• ${p.nombre} (${p.stock} uds)`)
+    .join('\n');
 
+  if (productosCriticos.length > 0) {
+    alert(`⚠️ Productos con Bajo Stock:\n\n${productosCriticos}`);
+  } else {
+    alert('✅ ¡Todo bajo control! No hay productos con stock crítico.');
+  }
+}
   cargarEstadisticas() {
     this.loading = true;
-    this.cdr.detectChanges();
-
     this.prodService.getProductos().subscribe({
       next: (data: any) => {
-        // Manejo de paginación de Django (por si acaso)
         const lista = Array.isArray(data) ? data : (data.results || []);
         
-        // Llenamos las estadísticas
         this.totalProductos = lista.length;
-        this.bajoStock = lista.filter((p: any) => p.stock <= 5).length;
         
-        // Llenamos la tabla de abajo con los últimos 5 productos
+        // Sincronizado con el HTML (Bajo stock <= 5)
+        this.bajoStock = lista.filter((p: Producto) => (p.stock ?? 0) <= 5).length;
+        
+        // Tomamos los últimos 5 y los invertimos para que el más nuevo esté arriba
         this.productosRecientes = lista.slice(-5).reverse(); 
         
         this.loading = false;
-        this.cdr.detectChanges(); // ¡Despierta Angular!
+        this.cdr.detectChanges(); 
       },
       error: (err) => {
         console.error('Error en Dashboard:', err);

@@ -8,17 +8,32 @@ import { Producto } from '../models/producto.model';
 })
 export class ProductosService {
   private http = inject(HttpClient);
-  private apiUrl = '/api/productos/'; 
+  
+  // IMPORTANTE: La URL debe terminar en '/' para que Django no bloquee el GET
+  private apiUrl = 'http://localhost:8000/api/productos/'; 
 
-  getProductos(): Observable<Producto[]> {
-    return this.http.get<Producto[]>(this.apiUrl);
+  // 1. Obtener todos los productos
+  getProductos(): Observable<any> {
+    return this.http.get<any>(this.apiUrl);
   }
 
-  crearProducto(producto: Producto): Observable<Producto> {
-    return this.http.post<Producto>(this.apiUrl, producto);
+  // 2. Obtener un producto por ID (para el formulario de edición)
+  getProductoById(id: number): Observable<Producto> {
+    return this.http.get<Producto>(`${this.apiUrl}${id}/`);
   }
 
-  eliminarProducto(id: number): Observable<any> {
+  // 3. Crear un nuevo producto
+  crearProducto(producto: any): Observable<any> {
+    return this.http.post(this.apiUrl, producto);
+  }
+
+  // 4. Actualizar un producto existente
+  updateProducto(id: number, producto: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}${id}/`, producto);
+  }
+
+  // 5. Eliminar un producto
+  deleteProducto(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}${id}/`);
   }
 }

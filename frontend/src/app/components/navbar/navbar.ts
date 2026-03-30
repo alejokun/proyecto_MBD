@@ -1,3 +1,4 @@
+// src/app/components/navbar/navbar.ts
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
@@ -18,13 +19,13 @@ export class NavbarComponent implements OnInit {
   isAdmin = false;
 
   ngOnInit() {
-    // Escuchamos los cambios del servicio de autenticación
+    // Suscripción reactiva: Si el estado cambia en cualquier lado, el Navbar reacciona
     this.authService.isLoggedIn$.subscribe(status => this.isLoggedIn = status);
     this.authService.isAdmin$.subscribe(status => this.isAdmin = status);
   }
 
   logout() {
     this.authService.logout();
-    this.router.navigate(['/']); // Al cerrar sesión, lo mandamos al Home público
+    // El servicio ya limpia el localStorage y redirige
   }
 }
