@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('inventario.urls')),           # <-- SOLO ESTO
     path('api/auth/', include('inventario.auth_urls')), # <-- Y ESTO
+    path('api/monitoreo/', include('monitoreo.urls')),   # <-- NUEVO 
 ]

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     'inventario', 
+    'monitoreo',
 ]
 
 
@@ -52,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'monitoreo.middleware.SQLCaptureMiddleware',
 ]
 
 ROOT_URLCONF = 'proyecto_MBD.urls'
