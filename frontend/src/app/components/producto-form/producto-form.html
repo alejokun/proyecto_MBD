@@ -21,7 +21,13 @@
               </div>
 
               <div class="col-md-5 mb-3">
-                <label class="form-label fw-bold">Categoría</label>
+                <label class="form-label fw-bold d-flex justify-content-between">
+                  Categoría
+                  <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none fw-bold" 
+                          data-bs-toggle="modal" data-bs-target="#modalCategoria">
+                    + Nueva
+                  </button>
+                </label>
                 <select formControlName="id_categoria" class="form-select"
                         [class.is-invalid]="productoForm.get('id_categoria')?.invalid && productoForm.get('id_categoria')?.touched">
                   <option [value]="null" disabled>Seleccione...</option>
@@ -63,6 +69,33 @@
             </div>
           </form>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalCategoria" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow">
+      <div class="modal-header bg-dark text-white rounded-top-4">
+        <h5 class="modal-title">Añadir Nueva Categoría</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Nombre</label>
+          <input [(ngModel)]="nuevaCat.nombre" type="text" class="form-control" placeholder="Ej: Periféricos">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Descripción</label>
+          <textarea [(ngModel)]="nuevaCat.descripcion" class="form-control" rows="3" placeholder="Opcional..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+        <button (click)="crearNuevaCategoria()" type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">
+          Guardar Categoría
+        </button>
       </div>
     </div>
   </div>

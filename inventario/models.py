@@ -18,7 +18,8 @@ class Productos(models.Model):
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.IntegerField()
     id_categoria = models.ForeignKey(Categorias, on_delete=models.PROTECT, db_column='id_categoria')
-    fecha_creacion = models.DateTimeField(blank=True, null=True)
+    # CORRECCIÓN: auto_now_add hace que se cree la fecha sola al insertar
+    fecha_creacion = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     
     class Meta:
         managed = False
@@ -32,7 +33,8 @@ class Movimientos(models.Model):
     tipo = models.CharField(max_length=10)  # 'entrada' o 'salida'
     cantidad = models.IntegerField()
     id_usuario = models.ForeignKey(User, on_delete=models.PROTECT, db_column='id_usuario')
-    fecha = models.DateTimeField(blank=True, null=True)
+    # CORRECCIÓN: auto_now_add para registrar el momento exacto del movimiento
+    fecha = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     observacion = models.TextField(blank=True, null=True)
     
     class Meta:

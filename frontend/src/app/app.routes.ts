@@ -9,59 +9,47 @@ import { ProfileComponent } from './components/profile/profile';
 import { HomeComponent } from './components/home/home';
 import { CarritoComponent } from './components/carrito/carrito';
 import { MonitoreoComponent } from './components/monitoreo/monitoreo';
-// Guardianes
+
+// Guardianes funcionales
 import { adminGuard } from './guards/admin-guard';
 import { authGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
-  // 1. PÁGINAS PÚBLICAS
+  // --------------------------------------------------------
+  // 1. RUTAS PÚBLICAS (Abiertas para todos)
+  // --------------------------------------------------------
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'carrito', component: CarritoComponent },
 
-  // 2. RUTAS DE USUARIO LOGUEADO (Cualquier Rol)
+  // --------------------------------------------------------
+  // 2. RUTAS DE USUARIO (Requieren solo estar logueado)
+  // --------------------------------------------------------
   { 
     path: 'perfil', 
     component: ProfileComponent, 
     canActivate: [authGuard] 
   },
-  { 
-    path: 'dashboard', 
-    // Si eres Admin vas al Dashboard, si no, podrías redirigir al Home o Perfil
-    component: DashboardComponent, 
-    canActivate: [authGuard] 
+
+  // --------------------------------------------------------
+  // 3. BLOQUE ADMINISTRATIVO (Doble Candado: Auth + Admin)
+  // --------------------------------------------------------
+  {
+    path: '',
+    canActivate: [authGuard, adminGuard], // Si falla uno, no entra a nada de abajo
+    children: [
+      { path: 'dashboard', component: DashboardComponent },
+      { path: 'productos', component: ProductosListComponent },
+      { path: 'nuevo-producto', component: ProductoFormComponent },
+      { path: 'editar-producto/:id', component: ProductoFormComponent },
+      { path: 'categorias', component: CategoriasListComponent },
+      { path: 'monitoreo', component: MonitoreoComponent },
+    ]
   },
 
-  // 3. RUTAS PROTEGIDAS (Solo Administradores)
-  { 
-    path: 'productos', 
-    component: ProductosListComponent, 
-    canActivate: [adminGuard] 
-  },
-  { 
-    path: 'nuevo-producto', 
-    component: ProductoFormComponent, 
-    canActivate: [adminGuard] 
-  },
-  { 
-    path: 'editar-producto/:id', 
-    component: ProductoFormComponent, 
-    canActivate: [adminGuard] 
-  },
-  { 
-    path: 'categorias', 
-    component: CategoriasListComponent, 
-    canActivate: [adminGuard] 
-  },
-  
-  // NUEVA RUTA ACADÉMICA: Monitoreo de Base de Datos
-  { 
-    path: 'monitoreo', 
-    component: MonitoreoComponent, 
-    canActivate: [adminGuard] 
-  },
-
-  // Redirección comodín
+  // --------------------------------------------------------
+  // 4. MANEJO DE ERRORES
+  // --------------------------------------------------------
   { path: '**', redirectTo: '' }
 ];
