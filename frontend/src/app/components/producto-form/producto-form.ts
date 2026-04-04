@@ -1,21 +1,21 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms'; // Añadido FormsModule para el modal
+import { FormBuilder, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { ProductosService } from '../../services/productos';
-import { CategoriasService } from '../../services/categorias'; // Usamos tu servicio pro
-import { Categoria } from '../../models/producto.model';
+import { CategoriasService } from '../../services/categorias';
+import { Categoria, Producto } from '../../models/producto.model';
 
 @Component({
   selector: 'app-producto-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule], // Añadido FormsModule
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
   templateUrl: './producto-form.html'
 })
 export class ProductoFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private prodService = inject(ProductosService);
-  private catService = inject(CategoriasService); // Inyectamos el servicio de categorías
+  private catService = inject(CategoriasService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private cdr = inject(ChangeDetectorRef);
@@ -25,8 +25,8 @@ export class ProductoFormComponent implements OnInit {
   isEditMode = false;
   productoId?: number;
 
-  // Variable para el modal de nueva categoría (Prueba #22)
-  nuevaCat = { nombre: '', descripcion: '' };
+  // Variable para el modal (Soporta creación y edición)
+  nuevaCat: any = { nombre: '', descripcion: '' };
 
   productoForm = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(3)]],
@@ -38,7 +38,6 @@ export class ProductoFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarCategorias();
-
     const id = this.route.snapshot.params['id'];
     if (id) {
       this.isEditMode = true;
@@ -57,24 +56,55 @@ export class ProductoFormComponent implements OnInit {
     });
   }
 
-  // --- Lógica de la Prueba #22 (El "2 por 1") ---
-  crearNuevaCategoria() {
+  // --- GESTIÓN DE CATEGORÍAS (Pruebas #22, #23, #24) ---
+
+  guardarCategoria() {
     if (!this.nuevaCat.nombre) return alert('El nombre es obligatorio');
 
-    this.catService.crearCategoria(this.nuevaCat).subscribe({
-      next: (catCreada) => {
-        alert('✅ Categoría creada y seleccionada');
-        this.categorias.push(catCreada); // La metemos al array local
-        
-        // Actualizamos el valor en el Formulario Reactivo automáticamente
-        this.productoForm.patchValue({ id_categoria: catCreada.id });
-        
-        this.nuevaCat = { nombre: '', descripcion: '' }; // Limpiamos datos del modal
-        this.cdr.detectChanges();
-      },
-      error: (err) => alert('❌ Error: El nombre ya existe o no tienes permisos de Admin.')
-    });
+    if (this.nuevaCat.id) {
+      // PRUEBA #23: EDITAR
+      this.catService.updateCategoria(this.nuevaCat.id, this.nuevaCat).subscribe({
+        next: (res) => {
+          const index = this.categorias.findIndex(c => c.id === res.id);
+          this.categorias[index] = res;
+          alert('✅ Categoría actualizada correctamente');
+          this.nuevaCat = { nombre: '', descripcion: '' };
+          this.cdr.detectChanges();
+        }
+      });
+    } else {
+      // PRUEBA #22: CREAR
+      this.catService.crearCategoria(this.nuevaCat).subscribe({
+        next: (catCreada) => {
+          this.categorias.push(catCreada);
+          this.productoForm.patchValue({ id_categoria: catCreada.id });
+          alert('✅ Categoría creada y seleccionada');
+          this.nuevaCat = { nombre: '', descripcion: '' };
+          this.cdr.detectChanges();
+        },
+        error: () => alert('❌ Error: El nombre ya existe o no tienes permisos.')
+      });
+    }
   }
+
+  prepararEdicionCat(cat: Categoria) {
+    this.nuevaCat = { ...cat }; // Clonamos para editar
+  }
+
+  borrarCategoria(id: number) {
+    if (confirm('¿Estás seguro? Se borrará permanentemente si no tiene productos.')) {
+      this.catService.deleteCategoria(id).subscribe({
+        next: () => {
+          this.categorias = this.categorias.filter(c => c.id !== id);
+          alert('✅ Categoría eliminada');
+          this.cdr.detectChanges();
+        },
+        error: () => alert('❌ No se puede eliminar: Hay productos usando esta categoría.')
+      });
+    }
+  }
+
+  // --- GESTIÓN DE PRODUCTOS ---
 
   cargarDatosProducto(id: number) {
     this.loading = true;
@@ -90,10 +120,7 @@ export class ProductoFormComponent implements OnInit {
         this.loading = false;
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        console.error('Error al cargar producto', err);
-        this.router.navigate(['/productos']);
-      }
+      error: () => this.router.navigate(['/productos'])
     });
   }
 
@@ -112,10 +139,7 @@ export class ProductoFormComponent implements OnInit {
 
     operacion.subscribe({
       next: () => this.router.navigate(['/productos']),
-      error: (err) => {
-        this.loading = false;
-        console.error('Error al guardar:', err);
-      }
+      error: () => this.loading = false
     });
   }
 }
